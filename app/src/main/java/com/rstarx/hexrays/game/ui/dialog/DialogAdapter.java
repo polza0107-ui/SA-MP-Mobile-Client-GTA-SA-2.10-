@@ -179,7 +179,9 @@ public class DialogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (this.mCurrentSelectedPosition == viewHolder.getAdapterPosition()) {
             this.mCurrentSelectedView = viewHolder.mRowBg;
             viewHolder.mRowBg.setVisibility(View.VISIBLE);
-            this.mOnClickListener.onClick(viewHolder.getAdapterPosition(), viewHolder.mFields[0].getText().toString());
+            if (this.mOnClickListener != null && viewHolder.mFields[0] != null && viewHolder.mFields[0].getText() != null) {
+                this.mOnClickListener.onClick(viewHolder.getAdapterPosition(), viewHolder.mFields[0].getText().toString());
+            }
         } else {
             viewHolder.mRowBg.setVisibility(View.GONE);
         }
@@ -198,7 +200,9 @@ public class DialogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     View unused2 = DialogAdapter.this.mCurrentSelectedView = viewHolder.mRowBg;
                     viewHolder.mRowBg.startAnimation(DialogAdapter.this.buttonShow);
                     viewHolder.mRowBg.setVisibility(View.VISIBLE);
-                    DialogAdapter.this.mOnClickListener.onClick(viewHolder.getAdapterPosition(), viewHolder.mFields[0].getText().toString());
+                    if (DialogAdapter.this.mOnClickListener != null && viewHolder.mFields[0] != null && viewHolder.mFields[0].getText() != null) {
+                        DialogAdapter.this.mOnClickListener.onClick(viewHolder.getAdapterPosition(), viewHolder.mFields[0].getText().toString());
+                    }
                 }
                 else if (DialogAdapter.this.mOnDoubleClickListener != null) {
                     view.startAnimation(DialogAdapter.this.buttonScale);

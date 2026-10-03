@@ -136,23 +136,33 @@ public class DialogManager {
     }
 
     public void show(int i, int i2, String str, String str2, String str3, String str4) {
-        isShow = true;
-        this.mCurrentDialogId = i;
-        this.mDialogStyle = i2;
-        this.mCaption = str;
-        this.mText = str2;
-        this.mButtonPositive = str3;
-        this.mButtonNegative = str4;
+        try {
+            isShow = true;
+            this.mCurrentDialogId = i;
+            this.mDialogStyle = i2;
+            this.mCaption = str != null ? str : "";
+            this.mText = str2 != null ? str2 : "";
+            this.mButtonPositive = str3 != null ? str3 : "";
+            this.mButtonNegative = str4 != null ? str4 : "";
 
-        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) this.mDialogTextLayout.getLayoutParams();
-        layoutParams.height = -2;
-        this.mDialogTextLayout.setLayoutParams(layoutParams);
-        FrameLayout.LayoutParams layoutParams2 = (FrameLayout.LayoutParams) this.mMainLayout.getLayoutParams();
-        layoutParams2.gravity = 17;
-        this.mMainLayout.setLayoutParams(layoutParams2);
+            if (this.mDialogTextLayout != null && this.mDialogTextLayout.getLayoutParams() instanceof ConstraintLayout.LayoutParams) {
+                ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) this.mDialogTextLayout.getLayoutParams();
+                layoutParams.height = -2;
+                this.mDialogTextLayout.setLayoutParams(layoutParams);
+            }
+            if (this.mMainLayout != null && this.mMainLayout.getLayoutParams() instanceof FrameLayout.LayoutParams) {
+                FrameLayout.LayoutParams layoutParams2 = (FrameLayout.LayoutParams) this.mMainLayout.getLayoutParams();
+                layoutParams2.gravity = 17;
+                this.mMainLayout.setLayoutParams(layoutParams2);
+            }
 
-        loadDialog();
-        Util.ShowLayout(this.mMainLayout, true);
+            loadDialog();
+            if (this.mMainLayout != null) {
+                Util.ShowLayout(this.mMainLayout, true);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     public void hideWithoutReset() {
