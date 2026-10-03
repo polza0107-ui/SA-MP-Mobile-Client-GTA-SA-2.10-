@@ -257,6 +257,9 @@ void ApplyPatches()
     CHook::NOP(g_libGTASA + 0x004D8700, 1);  // CCoronas::RenderSunReflection crash
     CHook::NOP(g_libGTASA + 0x006A852C, 1);  // не давать ган при выходе из тачки   ( клюшка, дробовик and etc )
     CHook::NOP(g_libGTASA + 0x006A84E0, 1);  // не давать ган при выходе из тачки  ( клюшка, дробовик and etc )
+
+    // Fix RLEDecompress crash: allocate 512 bytes extra padding for compressed texture buffer in LoadFullTexture
+    CHook::WriteMemory(g_libGTASA + 0x2858D0, (uintptr_t)"\x80\x02\x08\x91", 4); // add x0, x20, #512
 #endif
 
     CHook::RET("_ZN17CVehicleRecording4LoadEP8RwStreamii"); // CVehicleRecording::Load
