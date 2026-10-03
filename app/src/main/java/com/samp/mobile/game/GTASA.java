@@ -7,6 +7,10 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.Settings;
 import com.bytedance.shadowhook.ShadowHook;
 import com.joom.paranoid.Obfuscate;
 import com.samp.mobile.launcher.util.SharedPreferenceCore;
@@ -99,6 +103,21 @@ public class GTASA extends WarMedia {
         //  wantsAccelerometer = true;
 
         super.onCreate(bundle);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                try {
+                    Intent permIntent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                    permIntent.setData(Uri.parse("package:" + getPackageName()));
+                    startActivity(permIntent);
+                } catch (Exception e) {
+                    try {
+                        Intent permIntent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                        startActivity(permIntent);
+                    } catch (Exception ignored) {}
+                }
+            }
+        }
 
         if (new SharedPreferenceCore().getBoolean(this, "MLOADER")) {
             try {
