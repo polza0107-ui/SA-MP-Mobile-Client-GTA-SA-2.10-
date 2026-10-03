@@ -67,6 +67,17 @@
         </provider>
 
         <activity
+            android:name="com.samp.mobile.game.PermissionActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name="com.samp.mobile.game.SAMP"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.NoActionBar"
@@ -74,11 +85,7 @@
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan"
             android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity>
+        </activity>
 
     <activity
         android:name=".launcher.MainActivity"
