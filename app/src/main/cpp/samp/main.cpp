@@ -283,7 +283,7 @@ void DoInitStuff()
 
         FLog("DoInitStuff connected to %s:%d", targetHost, targetPort);
     }
-}
+
 
 extern "C" {
 JNIEXPORT void JNICALL Java_com_rstarx_hexrays_game_SAMP_initializeSAMP(JNIEnv *pEnv, jobject thiz, jstring path)
