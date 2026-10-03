@@ -267,6 +267,8 @@ void DoInitStuff()
         bGameInited = true;
     }
 
+    if (!bNetworkInited && !bDebug)
+    {
         ReadSettingFile();
 
         const char* targetHost = "192.168.1.103";
@@ -283,6 +285,7 @@ void DoInitStuff()
 
         FLog("DoInitStuff connected to %s:%d", targetHost, targetPort);
     }
+}
 
 
 extern "C" {
