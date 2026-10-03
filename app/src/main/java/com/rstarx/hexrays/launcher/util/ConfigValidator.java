@@ -23,7 +23,7 @@ public class ConfigValidator {
                     StringBuilder sb = new StringBuilder();
                     sb.append("[client]\n");
                     sb.append("name=AndroidUser\n");
-                    sb.append("host=192.168.1.103\n");
+                    sb.append("host=192.168.1.112\n");
                     sb.append("port=7777\n");
                     sb.append("password=\n");
                     sb.append("version=0.3.7\n\n");

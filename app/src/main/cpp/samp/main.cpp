@@ -271,7 +271,7 @@ void DoInitStuff()
     {
         ReadSettingFile();
 
-        const char* targetHost = "192.168.1.103";
+        const char* targetHost = "192.168.1.112";
         int targetPort = 7777;
         if (strlen(pSettings->Get().szHost) > 0 && strcmp(pSettings->Get().szHost, "127.0.0.1") != 0) {
             targetHost = pSettings->Get().szHost;

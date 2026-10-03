@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                 mNickName.setText(nn);
                 mNickName.setSelection(mNickName.getText().length());
             }
-            mWini.put("client", "host", "192.168.1.103");
+            mWini.put("client", "host", "192.168.1.112");
             mWini.put("client", "port", 7777);
             mWini.store();
         } catch (Exception e) {
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             if (mWini != null) {
                 mWini.put("client", "name", finalName);
-                mWini.put("client", "host", "192.168.1.103");
+                mWini.put("client", "host", "192.168.1.112");
                 mWini.put("client", "port", 7777);
                 mWini.store();
             }
