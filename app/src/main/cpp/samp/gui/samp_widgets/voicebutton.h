@@ -15,15 +15,17 @@ class VoiceButton : public Button
 public:
 	VoiceButton() : Button("TALK", UISettings::fontSize() / 2) {
 		m_recording = false;
+		countdown = 0;
 		/* 5:3 aspect ratio */
-		//m_texture_micro_on = (RwTexture*)CUtil::LoadTextureFromDB("samp", "icon_micro_on");
-		//m_texture_micro_off = (RwTexture*)CUtil::LoadTextureFromDB("samp", "icon_micro_off");
-		m_texture_micro_on = (RwTexture*)CUtil::LoadTextureFromDB("samp", "voiceactive"); //default
-		//if (Server == 40) m_texture_micro_on = (RwTexture*)CUtil::LoadTextureFromDB("samp", "voiceactive");
-		//if (Server == 40) m_texture_micro_off = (RwTexture*)CUtil::LoadTextureFromDB("samp", "voicepassive");
-		m_texture_micro_off = (RwTexture*)CUtil::LoadTextureFromDB("samp", "voicepassive"); //default
-		//if (Server == 13) m_texture_micro_off = (RwTexture*)CUtil::LoadTextureFromDB("samp", "icon_micro_on");
-		//if (Server == 13) m_texture_micro_on = (RwTexture*)CUtil::LoadTextureFromDB("samp", "icon_micro_off");
+		m_texture_micro_on = nullptr;
+		m_texture_micro_off = nullptr;
+		
+		// Try to load textures, but don't crash if they fail
+		RwTexture* tex_on = (RwTexture*)CUtil::LoadTextureFromDB("samp", "voiceactive");
+		RwTexture* tex_off = (RwTexture*)CUtil::LoadTextureFromDB("samp", "voicepassive");
+		
+		if(tex_on) m_texture_micro_on = tex_on;
+		if(tex_off) m_texture_micro_off = tex_off;
 	}
 
 	virtual void draw(ImGuiRenderer* renderer) override
@@ -32,8 +34,20 @@ public:
 
 		if (countdown > 0 && recording() == 1) countdown--;
 		if (countdown == 0 && recording() == 1) setRecording(0);
-		renderer->drawImage(absolutePosition(), absolutePosition() + size(),
-			recording() ? m_texture_micro_on->raster : m_texture_micro_off->raster);
+		
+		// Safe check: reload textures if they're null (cache corruption fix for Android 13-15)
+		if(!m_texture_micro_on) {
+			m_texture_micro_on = (RwTexture*)CUtil::LoadTextureFromDB("samp", "voiceactive");
+		}
+		if(!m_texture_micro_off) {
+			m_texture_micro_off = (RwTexture*)CUtil::LoadTextureFromDB("samp", "voicepassive");
+		}
+		
+		// Only draw if textures are valid
+		if(m_texture_micro_on && m_texture_micro_off) {
+			renderer->drawImage(absolutePosition(), absolutePosition() + size(),
+				recording() ? m_texture_micro_on->raster : m_texture_micro_off->raster);
+		}
 
 		//MyLog2("%f,%f",absolutePosition(), absolutePosition() + size());
 		//MyLog2("countdown %d", countdown);

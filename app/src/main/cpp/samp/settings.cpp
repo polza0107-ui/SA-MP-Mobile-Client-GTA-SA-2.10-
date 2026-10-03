@@ -18,9 +18,19 @@ CSettings::CSettings()
 
 	if(reader.ParseError() < 0)
 	{
-		FLog("Error: can't load %s", buff);
-		std::terminate();
-		return;
+		CSimpleIniA ini;
+		ini.SetUnicode(false);
+		ini.SetValue("client", "name", buff);
+		ini.SetValue("client", "host", "192.168.1.103");
+		ini.SetValue("client", "port", "7777");
+		ini.SetValue("client", "password", "");
+		ini.SetValue("client", "version", "0.3.7");
+		ini.SetValue("gui", "androidkeyboard", "false");
+		ini.SetValue("gui", "VoiceChatEnable", "true");
+		ini.SetValue("gui", "fps", "0");
+		ini.SetValue("gui", "ChatMaxMessages", "6");
+		ini.SetValue("gui", "FPSLimit", "120");
+		ini.SaveFile(buff);
 	}
 
 	// client
@@ -28,11 +38,7 @@ CSettings::CSettings()
 	sprintf(buff, "__android_%d%d", rand() % 1000, rand() % 1000);
 	length = reader.Get("client", "name", buff).copy(m_Settings.szNickName, 24);
 	m_Settings.szNickName[length] = '\0';
-	std::string hostVal = reader.Get("client", "ip", "");
-	if (hostVal.empty()) {
-		hostVal = reader.Get("client", "host", "192.168.1.103");
-	}
-	length = hostVal.copy(m_Settings.szHost, MAX_SETTINGS_STRING);
+	length = reader.Get("client", "host", "192.168.1.103").copy(m_Settings.szHost, MAX_SETTINGS_STRING);
 	m_Settings.szHost[length] = '\0';
 	length = reader.Get("client", "password", "").copy(m_Settings.szPassword, MAX_SETTINGS_STRING);
 	m_Settings.szPassword[length] = '\0';
@@ -90,7 +96,7 @@ CSettings::CSettings()
 	m_Settings.iFirstPerson = reader.GetBoolean("gui", "firstperson", true);
 	m_Settings.iCutout = reader.GetBoolean("gui", "cutout", false);
 	m_Settings.iFPSCounter = reader.GetBoolean("gui", "fps", false);
-	m_Settings.iFPSCount = reader.GetInteger("gui", "FPSLimit", 60);
+	m_Settings.iFPSCount = reader.GetInteger("gui", "FPSLimit", 120);
 	m_Settings.iHPArmourText = reader.GetBoolean("gui", "hparmourtext", false);
 	m_Settings.iOutfitGuns = reader.GetBoolean("gui", "outfitguns", false);
 	m_Settings.iPCMoney = reader.GetBoolean("gui", "pcmoney", false);
@@ -98,14 +104,4 @@ CSettings::CSettings()
 	m_Settings.iSkyBox = reader.GetBoolean("gui", "skybox", false);
 	m_Settings.iSnow = reader.GetBoolean("gui", "snow", false);
 	FLog("Settings loaded.");
-}
-
-const stSettings& CSettings::GetReadOnly()
-{
-    return m_Settings;
-}
-
-stSettings& CSettings::GetWrite()
-{
-    return m_Settings;
 }

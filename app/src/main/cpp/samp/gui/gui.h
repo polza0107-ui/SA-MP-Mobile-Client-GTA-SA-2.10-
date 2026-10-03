@@ -22,12 +22,14 @@
 #include "samp_widgets/chat.h"
 #include "samp_widgets/spawn.h"
 #include "samp_widgets/buttonpanel.h"
-#include "samp_widgets/playertablist.h"
+#include "samp_widgets/playerTabList.h"
 #include "samp_widgets/voicebutton.h"
 
 #include "samp_widgets/dialogs/dialog.h"
 
 #include "..//vendor/raknet/SingleProducerConsumer.h"
+
+class ButtonPanel;
 
 #pragma pack(push, 1)
 struct BUFFERED_COMMAND_TEXTDRAW
@@ -40,11 +42,11 @@ class UI : public Widget, public ImGuiWrapper
 {
 public:
 	UI(const ImVec2& display_size, const std::string& font_path);
+    UI(const ImVec2& display_size, const std::vector<char>& fontData);
 
 	bool initialize() override;
 	void render() override;
 	void shutdown() override;
-
 
 	SplashScreen* splashscreen() const { return m_splashScreen; }
 	Chat* chat() const { return m_chat; }
@@ -63,12 +65,14 @@ public:
 	}
 
 	float ScaleX(float x) {
-		return x * displaySize().x * (1.0f / 1920.0f);
+        return x * this->displaySize().x * (1.0f / 1920.0f);
 	}
 
 	float ScaleY(float y) {
 		return y * displaySize().y * (1.0f / 1080.0f);
 	}
+
+    // ตัวอย่างการแก้ใน gui.h ถ้ามันหา displaySize() ไม่เจอ
 
 	float GetFontSize() {
 		return UISettings::fontSize();
@@ -79,7 +83,6 @@ public:
 	bool OnTouchEvent(int type, bool multi, int x, int y);
 
     void renderDebug();
-
 
     void ProcessPushedTextdraws();
     void PushToBufferedQueueTextDrawPressed(uint16_t textdrawId);
@@ -100,8 +103,6 @@ private:
     Label* label2;
     Label* label3;
     Label* label4;
-
-    float 		m_fFontSize;
 
 	bool m_bNeedClearMousePos = false;
 

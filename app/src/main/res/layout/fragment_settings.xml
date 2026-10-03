@@ -5,24 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/settings_nickname"
-        android:layout_width="@dimen/_250sdp"
-        android:layout_height="@dimen/_35sdp"
-        android:background="@drawable/ic_nickname_bg"
-        android:hint="NickName"
-        android:lines="1"
-        android:ems="24"
-        android:inputType="textPersonName"
-        android:fontFamily="@font/montserrat_bold"
-        android:textColor="@color/white"
-        android:textColorHint="@color/gray"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9"
-        app:layout_constraintVertical_bias="0.12" />
+
 
     <TextView
         android:id="@+id/textView9"
@@ -271,34 +254,7 @@
         app:layout_constraintStart_toStartOf="@+id/fps_seekbar"
         app:layout_constraintTop_toTopOf="@+id/fps_seekbar" />
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/monet_switch"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="wrap_content"
-        android:checked="false"
-        android:textOn=""
-        android:textOff=""
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.875"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings_nickname"
-        app:layout_constraintVertical_bias="0.56" />
 
-    <TextView
-        android:id="@+id/textView1868"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/montserrat_bold"
-        android:text="Monet Loader"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_12sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.155"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings_nickname"
-        app:layout_constraintVertical_bias="0.565" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -322,7 +278,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.82"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings_nickname"
         app:layout_constraintVertical_bias="0.64"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
     </Spinner>

@@ -21,10 +21,17 @@ extern CPlayerTags* pPlayerTags;
 extern UI* pUI;
 
 UI::UI(const ImVec2& display_size, const std::string& font_path)
-	: Widget(), ImGuiWrapper(display_size, font_path)
+    : Widget(), ImGuiWrapper(display_size, font_path)
 {
 	UISettings::Initialize(display_size);
 	this->setFixedSize(display_size);
+}
+
+UI::UI(const ImVec2& display_size, const std::vector<char>& fontData)
+    : Widget(), ImGuiWrapper(display_size, fontData)
+{
+    UISettings::Initialize(display_size);
+    this->setFixedSize(display_size);
 }
 
 bool UI::initialize()
@@ -95,10 +102,9 @@ bool UI::initialize()
 	// mem
 	Label* d_label1;
 
-	d_label1 = new Label(cryptor::create("SA:MP Mobile 2.10 x64").decrypt(), ImColor(1.0f, 1.0f, 1.0f), true, UISettings::fontSize() / 3);
+	d_label1 = new Label(cryptor::create("0.8.2.1 x1y2z").decrypt(), ImColor(1.0f, 1.0f, 1.0f), true, UISettings::fontSize() / 3);
 	this->addChild(d_label1);
 	d_label1->setPosition(ImVec2(3.0, 3.0));
-
 
     // ==== version ==== //
     //d_label = new Label("", ImColor(1.0f, 1.0f, 1.0f), true, UISettings::fontSize() / 2);
@@ -309,4 +315,3 @@ void UI::ProcessPushedTextdraws()
         m_BufferedCommandTextdraws.ReadUnlock();
     }
 }
-

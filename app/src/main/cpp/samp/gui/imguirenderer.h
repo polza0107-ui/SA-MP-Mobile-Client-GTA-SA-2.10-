@@ -6,7 +6,7 @@
 #include <string>
 
 /*
-	Обертка над ImGui
+	пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ ImGui
 */
 
 class ImGuiRenderer
@@ -27,6 +27,8 @@ public:
 
 	void pushClipRect(const ImVec2& min, const ImVec2& max, bool intersect = false);
 	void popClipRect();
+
+    bool isWithinRenderDistance(const ImVec2& pos, const ImVec2& cameraPos, float maxDist);
 
 	ImVec2 calculateTextSize(const std::string& text, float font_size = 0.0f);
 

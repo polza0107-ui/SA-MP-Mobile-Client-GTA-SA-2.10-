@@ -66,9 +66,6 @@ public:
 	~CSettings();
 
 	stSettings& Get() { return m_Settings; }
-
-    const stSettings& GetReadOnly();
-    stSettings& GetWrite();
 	
 private:
 	struct stSettings m_Settings;

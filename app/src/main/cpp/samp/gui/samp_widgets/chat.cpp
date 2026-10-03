@@ -78,7 +78,7 @@ void Chat::addPlayerMessage(const std::string& message, const std::string& nick,
 
 void Chat::draw(ImGuiRenderer* renderer)
 {
-	ListBox::draw(renderer);
+    ListBox::draw(renderer);
 }
 
 void Chat::activateEvent(bool active)

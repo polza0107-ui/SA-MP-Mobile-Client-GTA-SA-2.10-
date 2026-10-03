@@ -26,7 +26,7 @@ extern char* g_pszStorage;
 
 #define SAMP_VERSION	"0.3.7"
 
-#define SAMP_ARCHIVE_PATH "/Android/data/com.samp.mobile/samp.data"
+#define SAMP_ARCHIVE_PATH "/Android/data/com.rstarx.hexrays/samp.data"
 #define FONT_NAME "arial_bold.ttf"
 
 #define RAKSAMP_CLIENT
@@ -40,6 +40,7 @@ uint32_t GetTickCount();
 void LogVoice(const char* fmt, ...);
 
 void FLog(const char* fmt, ...);
+void crashlyticsLog(const char* fmt, ...);
 void MyLog(const char* fmt, ...);
 void MyLog2(const char* fmt, ...);
 void ChatLog(const char* fmt, ...);

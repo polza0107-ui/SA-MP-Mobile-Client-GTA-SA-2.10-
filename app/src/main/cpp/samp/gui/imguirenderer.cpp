@@ -1,284 +1,187 @@
 #include <string>
+#include <unordered_map>
 #include "imguirenderer.h"
 #include "uisettings.h"
 
-ImGuiRenderer::ImGuiRenderer(ImDrawList* draw_list, ImFont* font)
-{
-	m_drawList = draw_list;
-	m_font = font;
+// ระบบ Cache ขนาด Text (ลดภาระ CPU อย่างมาก)
+struct TextSizeCacheKey {
+    std::string text;
+    float fontSize;
+    bool operator==(const TextSizeCacheKey& other) const {
+        return fontSize == other.fontSize && text == other.text;
+    }
+};
+
+namespace std {
+    template<> struct hash<TextSizeCacheKey> {
+        size_t operator()(const TextSizeCacheKey& k) const {
+            return hash<string>()(k.text) ^ hash<float>()(k.fontSize);
+        }
+    };
 }
 
-void ImGuiRenderer::drawLine(const ImVec2& a, const ImVec2& b, const ImColor& color, float thickness)
-{
-	m_drawList->AddLine(a, b, color, thickness);
+static std::unordered_map<TextSizeCacheKey, ImVec2> g_TextSizeCache;
+
+ImGuiRenderer::ImGuiRenderer(ImDrawList* draw_list, ImFont* font) {
+    m_drawList = draw_list;
+    m_font = font;
 }
 
-void ImGuiRenderer::drawRect(const ImVec2& a, const ImVec2& b, const ImColor& color, bool fill, float thickness)
-{
-	fill ? m_drawList->AddRectFilled(a, b, color) :
-		m_drawList->AddRect(a, b, color, 0.0f, 15, thickness);
+// --- การวาดรูปทรงพื้นฐาน ---
+
+void ImGuiRenderer::drawLine(const ImVec2& a, const ImVec2& b, const ImColor& color, float thickness) {
+    m_drawList->AddLine(a, b, color, thickness);
+}
+
+void ImGuiRenderer::drawRect(const ImVec2& a, const ImVec2& b, const ImColor& color, bool fill, float thickness) {
+    if (fill) m_drawList->AddRectFilled(a, b, color, 0.0f);
+    else m_drawList->AddRect(a, b, color, 0.0f, 0, thickness);
 }
 
 void ImGuiRenderer::drawRectFilledMulticolor(const ImVec2& a, const ImVec2& b,
-	const ImColor& col_upr_left, const ImColor& col_upr_right,
-	const ImColor& col_bot_right, const ImColor& col_bot_left)
-{
-	m_drawList->AddRectFilledMultiColor(a, b, col_upr_left, col_upr_right, col_bot_right, col_bot_left);
+                                             const ImColor& c1, const ImColor& c2, const ImColor& c3, const ImColor& c4) {
+    m_drawList->AddRectFilledMultiColor(a, b, (ImU32)c1, (ImU32)c2, (ImU32)c3, (ImU32)c4);
 }
 
-void ImGuiRenderer::drawTriangle(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImColor& color, bool fill, float thickness)
-{
-	fill ? m_drawList->AddTriangleFilled(a, b, c, color) :
-		m_drawList->AddTriangle(a, b, c, color, thickness);
+void ImGuiRenderer::drawTriangle(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImColor& color, bool fill, float thickness) {
+    if (fill) m_drawList->AddTriangleFilled(a, b, c, color);
+    else m_drawList->AddTriangle(a, b, c, color, thickness);
 }
 
-void ImGuiRenderer::drawConvexPolyFilled(ImVec2* points, int num_points, const ImColor& color)
-{
-	m_drawList->AddConvexPolyFilled(points, num_points, color);
+void ImGuiRenderer::drawConvexPolyFilled(ImVec2* points, int num_points, const ImColor& color) {
+    m_drawList->AddConvexPolyFilled(points, num_points, color);
 }
 
-void ImGuiRenderer::drawText(const ImVec2& pos, const ImColor& color,
-	const char* begin, const char* end, bool outline, float font_size)
-{
-	float sz_font = font_size == 0.0f ? m_font->FontSize : font_size;
-
-	if (outline)
-	{
-		ImVec2 outlined = pos;
-		float outlineSize = UISettings::outlineSize();
-
-		// right
-		outlined.x += outlineSize;
-		m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.x -= outlineSize;
-
-		// left
-		outlined.x -= outlineSize;
-		m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.x += outlineSize;
-
-		// bottom
-		outlined.y += outlineSize;
-		m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.y -= outlineSize;
-
-		// top
-		outlined.y -= outlineSize;
-		m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.y += outlineSize;
-
-		// bottom-right
-		outlined.x += outlineSize;
-		outlined.y += outlineSize;
-		//m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.x -= outlineSize;
-		outlined.y -= outlineSize;
-
-		// bottom-left
-		outlined.x -= outlineSize;
-		outlined.y += outlineSize;
-		//m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.x += outlineSize;
-		outlined.y -= outlineSize;
-
-		// top-right
-		outlined.x += outlineSize;
-		outlined.y -= outlineSize;
-		//m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.x -= outlineSize;
-		outlined.y += outlineSize;
-
-		// top-left
-		outlined.x -= outlineSize;
-		outlined.y -= outlineSize;
-		//m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.x += outlineSize;
-		outlined.y += outlineSize;
-	}
-
-	m_drawList->AddText(m_font, sz_font, pos, color, begin, end);
+void ImGuiRenderer::pushClipRect(const ImVec2& min, const ImVec2& max, bool intersect) {
+    m_drawList->PushClipRect(min, max, intersect);
 }
 
-void ImGuiRenderer::drawText(const ImVec2& pos, const ImColor& color, const std::string& text, bool outlined, float font_size)
-{
-	if (text.empty()) return;
-
-	float sz_font = font_size == 0.0f ? m_font->FontSize : font_size;
-
-	const char* text_start = text.c_str();
-	const char* text_cur = text.c_str();
-	const char* text_end = text.c_str() + text.length();
-
-	ImVec2 pos_cur = pos;
-	ImColor color_cur = color;
-
-	while (*text_cur)
-	{
-		if (*text_cur == '{' && ((&text_cur[7] < text_end) && text_cur[7] == '}'))
-		{
-			// print accumulated text
-			if (text_cur != text_start)
-			{
-				drawText(pos_cur, color_cur, text_start, text_cur, outlined, sz_font);
-				ImVec2 sz = calculateTextSize(text_start, text_cur, sz_font);
-				pos_cur.x += sz.x;
-			}
-
-			// new colorcode
-			ImVec4 col;
-			if (processInlineHexColor(text_cur + 1, text_cur + 7, col)) {
-				color_cur = col;
-			}
-
-			text_cur += 7;
-			text_start = text_cur + 1;
-		}
-		else if (*text_cur == '\n')
-		{
-			// print accumulated text
-			if (text_cur != text_start)
-			{
-				drawText(pos_cur, color_cur, text_start, text_cur, outlined, sz_font);
-			}
-
-			pos_cur.x = pos.x;
-			pos_cur.y += sz_font;
-			text_start = text_cur + 1;
-		}
-		else if (*text_cur == '\t')
-		{
-			// print accumulated text
-			if (text_cur != text_start)
-			{
-				drawText(pos_cur, color_cur, text_start, text_cur, outlined, sz_font);
-				ImVec2 sz = calculateTextSize(text_start, text_cur, sz_font);
-				pos_cur.x += sz.x;
-			}
-
-			pos_cur.x += sz_font;
-			text_start = text_cur + 1;
-		}
-
-		++text_cur;
-	}
-
-	if (text_cur != text_start) {
-		drawText(pos_cur, color_cur, text_start, text_cur, outlined, sz_font);
-	}
+void ImGuiRenderer::popClipRect() {
+    m_drawList->PopClipRect();
 }
 
-ImVec2 ImGuiRenderer::calculateTextSize(const std::string& text, float font_size)
-{
-	ImVec2 text_size = { 0.0f, 0.0f };
-	if (text.empty()) return text_size;
+// --- การเรนเดอร์ตัวอักษรแบบ SAMP (รองรับสี {RRGGBB} และ Tab) ---
 
-	ImVec2 cur_size = { 0.0f, 0.0f };
-	if (font_size == 0.0f) font_size = m_font->FontSize;
-	
-	const char* text_start = text.c_str();
-	const char* text_cur = text.c_str();
-	const char* text_end = text.c_str() + text.length();
+void ImGuiRenderer::drawText(const ImVec2& pos, const ImColor& color, const char* begin, const char* end, bool outline, float font_size) {
+    if (!begin || (end && begin == end)) return;
+    float sz = font_size == 0.0f ? m_font->FontSize : font_size;
 
-	while (*text_cur)
-	{
-		if (*text_cur == '{' && ((&text_cur[7] < text_end) && text_cur[7] == '}'))
-		{
-			if (text_cur != text_start)
-			{
-				// ����� �� �����-����
-				ImVec2 sz = calculateTextSize(text_start, text_cur, font_size);
-				cur_size.x += sz.x;
-				if (cur_size.y == 0.0f) cur_size.y = sz.y;
-			}
-
-			text_cur += 7;
-			text_start = text_cur + 1;
-		}
-		else if (*text_cur == '\n')
-		{
-			if (text_cur != text_start)
-			{
-				// ����� �� \n
-				ImVec2 sz = calculateTextSize(text_start, text_cur, font_size);
-				cur_size.x += sz.x;
-				if (cur_size.y == 0.0f) cur_size.y = sz.y;
-			}
-
-			// ��������� text_size
-			text_size.x = ImMax(text_size.x, cur_size.x);
-			cur_size.y += font_size;
-			cur_size.x = 0.0f;
-
-			text_start = text_cur + 1;
-		}
-		else if (*text_cur == '\t')
-		{
-			if (text_cur != text_start)
-			{
-				// ����� �� \t
-				ImVec2 sz = calculateTextSize(text_start, text_cur, font_size);
-				cur_size.x += sz.x;
-				if (cur_size.y == 0.0f) cur_size.y = sz.y;
-			}
-
-			cur_size.x += font_size;
-			text_start = text_cur + 1;
-		}
-
-		++text_cur;
-	}
-
-	if (text_cur != text_start)
-	{
-		// ����� ��� ��������������
-		ImVec2 sz = calculateTextSize(text_start, text_cur, font_size);
-		cur_size.x += sz.x;
-		if (cur_size.y == 0.0f) cur_size.y = sz.y;
-	}
-
-	text_size = ImMax(text_size, cur_size);
-	return text_size;
+    if (outline) {
+        float os = UISettings::outlineSize();
+        // สร้างสีดำที่มี Alpha เดียวกับสีหลัก
+        ImU32 outline_col = ImGui::ColorConvertFloat4ToU32(ImVec4(0, 0, 0, color.Value.w));
+        m_drawList->AddText(m_font, sz, {pos.x + os, pos.y}, outline_col, begin, end);
+        m_drawList->AddText(m_font, sz, {pos.x - os, pos.y}, outline_col, begin, end);
+        m_drawList->AddText(m_font, sz, {pos.x, pos.y + os}, outline_col, begin, end);
+        m_drawList->AddText(m_font, sz, {pos.x, pos.y - os}, outline_col, begin, end);
+    }
+    m_drawList->AddText(m_font, sz, pos, color, begin, end);
 }
 
-ImVec2 ImGuiRenderer::calculateTextSize(const char* begin, const char* end, float font_size)
-{
-	return m_font->CalcTextSizeA(font_size == 0.0f ? m_font->FontSize : font_size, FLT_MAX, 0.0f, begin, end);
+void ImGuiRenderer::drawText(const ImVec2& pos, const ImColor& color, const std::string& text, bool outlined, float font_size) {
+    if (text.empty()) return;
+
+    const char* text_start = text.c_str();
+    const char* text_cur = text_start;
+    const char* text_end = text_start + text.length();
+    float sz = font_size == 0.0f ? m_font->FontSize : font_size;
+
+    ImVec2 pos_cur = pos;
+    ImColor color_cur = color;
+    const char* sub_start = text_start;
+
+    while (text_cur < text_end) {
+        // 1. จัดการ Color Code {RRGGBB}
+        if (*text_cur == '{' && text_cur + 7 < text_end && *(text_cur + 7) == '}') {
+            if (text_cur > sub_start) {
+                drawText(pos_cur, color_cur, sub_start, text_cur, outlined, sz);
+                pos_cur.x += calculateTextSize(std::string(sub_start, text_cur - sub_start), sz).x;
+            }
+            ImVec4 new_col;
+            if (processInlineHexColor(text_cur + 1, text_cur + 7, new_col)) {
+                color_cur = ImColor(new_col.x, new_col.y, new_col.z, color.Value.w);
+            }
+            text_cur += 8;
+            sub_start = text_cur;
+        }
+            // 2. จัดการขึ้นบรรทัดใหม่ \n
+        else if (*text_cur == '\n') {
+            if (text_cur > sub_start) {
+                drawText(pos_cur, color_cur, sub_start, text_cur, outlined, sz);
+            }
+            pos_cur.x = pos.x;
+            pos_cur.y += sz;
+            text_cur++;
+            sub_start = text_cur;
+        }
+            // 3. จัดการ Tab \t (สำคัญมากสำหรับหน้าต่าง Dialog)
+        else if (*text_cur == '\t') {
+            if (text_cur > sub_start) {
+                drawText(pos_cur, color_cur, sub_start, text_cur, outlined, sz);
+                pos_cur.x += calculateTextSize(std::string(sub_start, text_cur - sub_start), sz).x;
+            }
+            pos_cur.x += sz * 1.5f; // เว้นระยะ Tab 1.5 เท่าของขนาด Font
+            text_cur++;
+            sub_start = text_cur;
+        }
+        else {
+            text_cur++;
+        }
+    }
+
+    if (text_cur > sub_start) {
+        drawText(pos_cur, color_cur, sub_start, text_cur, outlined, sz);
+    }
 }
 
-bool ImGuiRenderer::processInlineHexColor(const char* start, const char* end, ImVec4& color)
-{
-	const int hexCount = (int)(end - start);
-	if (hexCount == 6)
-	{
-		char hex[7];
-		strncpy(hex, start, hexCount);
-		hex[hexCount] = 0;
+// --- ฟังก์ชันช่วยเหลือ (ความเร็วสูง) ---
 
-		unsigned int hexColor = 0;
-		if (sscanf(hex, "%x", &hexColor) > 0)
-		{
-			color.x = static_cast<float>((hexColor & 0x00FF0000) >> 16) / 255.0f;
-			color.y = static_cast<float>((hexColor & 0x0000FF00) >> 8) / 255.0f;
-			color.z = static_cast<float>((hexColor & 0x000000FF)) / 255.0f;
-			color.w = 1.0f;
-			return true;
-		}
-	}
+ImVec2 ImGuiRenderer::calculateTextSize(const std::string& text, float font_size) {
+    if (text.empty()) return {0, 0};
+    float sz = font_size == 0.0f ? m_font->FontSize : font_size;
 
-	return false;
+    TextSizeCacheKey key = { text, sz };
+    if (g_TextSizeCache.count(key)) return g_TextSizeCache[key];
+
+    // ลบ Color Code ออกก่อนคำนวณขนาดเพื่อให้ตำแหน่งแม่นยำที่สุด
+    std::string clean_text;
+    clean_text.reserve(text.length());
+    for (size_t i = 0; i < text.length(); ++i) {
+        if (text[i] == '{' && i + 7 < text.length() && text[i+7] == '}') {
+            i += 7; continue;
+        }
+        clean_text += text[i];
+    }
+
+    ImVec2 res = m_font->CalcTextSizeA(sz, FLT_MAX, 0.0f, clean_text.c_str());
+    if (g_TextSizeCache.size() > 1000) g_TextSizeCache.clear();
+    g_TextSizeCache[key] = res;
+    return res;
 }
 
-void ImGuiRenderer::drawImage(const ImVec2& a, const ImVec2& b, ImTextureID texture)
-{
-	m_drawList->AddImage(texture, a, b);
+ImVec2 ImGuiRenderer::calculateTextSize(const char* begin, const char* end, float font_size) {
+    return m_font->CalcTextSizeA(font_size == 0.0f ? m_font->FontSize : font_size, FLT_MAX, 0.0f, begin, end);
 }
 
-void ImGuiRenderer::pushClipRect(const ImVec2& min, const ImVec2& max, bool intersect)
-{
-	m_drawList->PushClipRect(min, max, intersect);
+bool ImGuiRenderer::processInlineHexColor(const char* start, const char* end, ImVec4& color) {
+    auto h2d = [](char c) -> int {
+        if (c >= '0' && c <= '9') return c - '0';
+        if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+        if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+        return 0;
+    };
+    int r = (h2d(start[0]) << 4) | h2d(start[1]);
+    int g = (h2d(start[2]) << 4) | h2d(start[3]);
+    int b = (h2d(start[4]) << 4) | h2d(start[5]);
+    color = ImVec4(r/255.0f, g/255.0f, b/255.0f, 1.0f);
+    return true;
 }
 
-void ImGuiRenderer::popClipRect()
-{
-	m_drawList->PopClipRect();
+void ImGuiRenderer::drawImage(const ImVec2& a, const ImVec2& b, ImTextureID tex) {
+    m_drawList->AddImage(tex, a, b);
+}
+
+bool ImGuiRenderer::isWithinRenderDistance(const ImVec2& p1, const ImVec2& p2, float d) {
+    float dx = p1.x - p2.x, dy = p1.y - p2.y;
+    return (dx*dx + dy*dy) <= (d*d);
 }

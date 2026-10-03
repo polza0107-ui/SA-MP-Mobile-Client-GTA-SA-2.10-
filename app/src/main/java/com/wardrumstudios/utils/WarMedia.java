@@ -17,9 +17,27 @@ public class WarMedia extends WarGamepad
 
     public String GetGameBaseDirectory() {
         this.baseDirectoryRoot = Environment.getExternalStorageDirectory().getAbsolutePath();
-        File gtaDir = new File(Environment.getExternalStorageDirectory(), "GTA");
-        if (gtaDir.exists() && gtaDir.isDirectory()) {
-            return gtaDir.getAbsolutePath() + "/";
+        try {
+            File gtaDir = new File(Environment.getExternalStorageDirectory(), "GTA");
+            if (gtaDir.exists() && gtaDir.isDirectory()) {
+                return gtaDir.getAbsolutePath() + "/";
+            }
+        } catch (Exception ignored) {}
+
+        if (Environment.getExternalStorageState().equals("mounted"))
+        {
+            try
+            {
+                File externalFilesDir = getExternalFilesDir(null);
+                if (externalFilesDir != null) {
+                    String absolutePath = externalFilesDir.getAbsolutePath();
+                    int androidIdx = absolutePath.indexOf("/Android");
+                    this.baseDirectoryRoot = androidIdx != -1 ? absolutePath.substring(0, androidIdx) : absolutePath;
+                    return externalFilesDir.getAbsolutePath() + "/";
+                }
+            } catch (Exception e)
+            {
+            }
         }
         return "/storage/emulated/0/GTA/";
     }

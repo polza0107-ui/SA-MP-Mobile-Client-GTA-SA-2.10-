@@ -53,7 +53,7 @@ import android.widget.FrameLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.joom.paranoid.Obfuscate;
-import com.samp.mobile.R;
+import com.rstarx.hexrays.R;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -68,18 +68,19 @@ import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+
 /**
-A base class used to provide a native-code event-loop interface to an
-application.  This class is designed to be subclassed by the application
-with very little need to extend the Java.  Paired with its native static-link
-library, libnv_event.a, this package makes it possible for native applciations
-to avoid any direct use of Java code.  In addition, input and other events are
-automatically queued and provided to the application in native code via a
-classic event queue-like API.  EGL functionality such as bind/unbind and swap
-are also made available to the native code for ease of application porting.
-Please see the external SDK documentation for an introduction to the use of
-this class and its paired native library.
-*/
+ A base class used to provide a native-code event-loop interface to an
+ application.  This class is designed to be subclassed by the application
+ with very little need to extend the Java.  Paired with its native static-link
+ library, libnv_event.a, this package makes it possible for native applciations
+ to avoid any direct use of Java code.  In addition, input and other events are
+ automatically queued and provided to the application in native code via a
+ classic event queue-like API.  EGL functionality such as bind/unbind and swap
+ are also made available to the native code for ease of application porting.
+ Please see the external SDK documentation for an introduction to the use of
+ this class and its paired native library.
+ */
 @Obfuscate
 public abstract class NvEventQueueActivity extends AppCompatActivity implements SensorEventListener, View.OnTouchListener {
 
@@ -87,18 +88,20 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
 
     private int SwapBufferSkip = 0;
 
+
+
     protected boolean paused = false;
 
-	protected boolean supportPauseResume = true;
+    protected boolean supportPauseResume = true;
 
     //accelerometer related
-  //  protected boolean wantsAccelerometer = false;
- //   protected SensorManager mSensorManager = null;
+    //  protected boolean wantsAccelerometer = false;
+    //   protected SensorManager mSensorManager = null;
     protected ClipboardManager mClipboardManager = null;
     protected int mSensorDelay = SensorManager.SENSOR_DELAY_GAME; //other options: SensorManager.SENSOR_DELAY_FASTEST, SensorManager.SENSOR_DELAY_NORMAL and SensorManager.SENSOR_DELAY_UI
-	protected Display display = null;
+    protected Display display = null;
 
-	FrameLayout mAndroidUI = null;
+    FrameLayout mAndroidUI = null;
 
     private static final int EGL_RENDERABLE_TYPE = 0x3040;
     private static final int EGL_OPENGL_ES2_BIT = 0x0004;
@@ -113,7 +116,7 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
     protected EGLContext eglContext = null;
     protected EGLConfig eglConfig = null;
 
-	protected SurfaceHolder cachedSurfaceHolder = null;
+    protected SurfaceHolder cachedSurfaceHolder = null;
     private int surfaceWidth = 0;
     private int surfaceHeight = 0;
     protected boolean ResumeEventDone = false;
@@ -129,18 +132,20 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
 
     private SurfaceView mSurfaceView = null;
 
+    private static NvEventQueueActivity mInstance = null;
+
     //private HeightProvider mHeightProvider = null;
 
     /* *
      * Helper function to select fixed window size.
-     * */ 
+     * */
     public void setFixedSize(int fw, int fh)
     {
-    	fixedWidth = fw;
-    	fixedHeight = fh;
+        fixedWidth = fw;
+        fixedHeight = fh;
     }
 
-    private int mUseFullscreen = 0;
+    private int mUseFullscreen = 1;
 
     private void processCutout()
     {
@@ -206,8 +211,6 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
 
     public native void togglePlayer(int toggle);
 
-    public native void onEventBackPressed();
-
     /**
      * Helper class used to pass raw data around.
      */
@@ -237,10 +240,10 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
      * or not be part of the .APK at all during the development phase of the
      * application, decreasing the size needed to be transmitted to the device
      * between changes to the code.
-     * 
+     *
      * @param filename The file to load.
      * @return The RawData object representing the file's fully loaded data,
-     * or null if loading failed. 
+     * or null if loading failed.
      */
     public RawData loadFile(String filename)
     {
@@ -255,7 +258,7 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
             {
                 try
                 {
-                    is = getAssets().open(filename); 
+                    is = getAssets().open(filename);
                 }
                 catch (Exception e2)
                 {
@@ -287,13 +290,13 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
      * or not be part of the .APK at all during the development phase of the
      * application, decreasing the size needed to be transmitted to the device
      * between changes to the code.
-     * 
+     *
      * The texture data will be flipped and bit-twiddled to fit being loaded directly
      * into OpenGL ES via the glTexImage2D call.
-     * 
+     *
      * @param filename The file to load.
      * @return The RawTexture object representing the texture's fully loaded data,
-     * or null if loading failed. 
+     * or null if loading failed.
      */
     public RawTexture loadTexture(String filename)
     {
@@ -308,22 +311,22 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
             {
                 try
                 {
-                    is = getAssets().open(filename); 
+                    is = getAssets().open(filename);
                 }
                 catch (Exception e2)
                 {
                 }
             }
-            
+
             Bitmap bmp = BitmapFactory.decodeStream(is);
             ret.width = bmp.getWidth();
             ret.height = bmp.getHeight();
             int[] pixels = new int[bmp.getWidth() * bmp.getHeight()];
             bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
-    
+
             // Flip texture
             int[] tmp = new int[bmp.getWidth()];
-            final int w = bmp.getWidth(); 
+            final int w = bmp.getWidth();
             final int h = bmp.getHeight();
             for (int i = 0; i < h>>1; i++)
             {
@@ -331,7 +334,7 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
                 System.arraycopy(pixels, (h-1-i)*w, pixels, i*w, w);
                 System.arraycopy(tmp, 0, pixels, (h-1-i)*w, w);
             }
-    
+
             // Convert from ARGB -> RGBA and put into the byte array
             ret.length = pixels.length * 4;
             ret.data = new byte[ret.length];
@@ -355,62 +358,71 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
         }
         return ret;
     }
-    
+
     /**
      * Function called when app requests accelerometer events.
      * Applications need/should NOT overide this function - it will provide
      * accelerometer events into the event queue that is accessible
      * via the calls in nv_event.h
-     * 
+     *
      * @param values0: values[0] passed to onSensorChanged(). For accelerometer: Acceleration minus Gx on the x-axis.
      * @param values1: values[1] passed to onSensorChanged(). For accelerometer: Acceleration minus Gy on the y-axis.
      * @param values2: values[2] passed to onSensorChanged(). For accelerometer: Acceleration minus Gz on the z-axis.
      * @return True if the event was handled.
      */
     public native boolean accelerometerEvent(float values0, float values1, float values2);
-    
+
     /**
      * The following indented function implementations are defined in libnvevent.a
      * The application does not and should not overide this; nv_event handles this internally
      * And remaps as needed into the native calls exposed by nv_event.h
      */
-		public native void cleanup();
-		public native boolean init(boolean z);
-		public native void setWindowSize(int w, int h);
-		public native void quitAndWait();
-		public native void postCleanup();
+    public native void cleanup();
+    public native boolean init(boolean z);
+    public native void setWindowSize(int w, int h);
+    public native void quitAndWait();
+    public native void postCleanup();
 
-        public native void imeClosed();
+    public native void imeClosed();
 
-        public native void lowMemoryEvent(); // TODO: implement this
-        public native boolean processTouchpadAsPointer(ViewParent viewParent, boolean z);
-        public native void notifyChange(String str, int i);
-        public native void changeConnection(boolean z);
+    public native void lowMemoryEvent(); // TODO: implement this
+    public native boolean processTouchpadAsPointer(ViewParent viewParent, boolean z);
+    public native void notifyChange(String str, int i);
+    public native void changeConnection(boolean z);
 
-		public native void pauseEvent();
-		public native void resumeEvent();
-		public native boolean touchEvent(int action, int x, int y, MotionEvent event);
-		public native boolean multiTouchEvent(int action, int count, 
-			int x0, int y0, int x1, int y1, MotionEvent event);
-		public native boolean keyEvent(int action, int keycode, int unicodeChar, int metaState, KeyEvent event);
+    public native void pauseEvent();
+
+
+
+    public native void onTabClose();
+    public native void resumeEvent();
+    public native boolean touchEvent(int action, int x, int y, MotionEvent event);
+    public native boolean multiTouchEvent(int action, int count,
+                                          int x0, int y0, int x1, int y1, MotionEvent event);
+    public native boolean keyEvent(int action, int keycode, int unicodeChar, int metaState, KeyEvent event);
 
     public native boolean multiTouchEvent4(int i, int i2, int i3, int i4, int i5, int i6, int i7, int i8, int i9, int i10, MotionEvent motionEvent);
 
     public native boolean customMultiTouchEvent(int action, int count, int x1, int y1, int x2, int y2,
                                                 int x3, int y3);
-	/**
-	 * END indented block, see in comment at top of block
-	 */
+    /**
+     * END indented block, see in comment at top of block
+     */
 
     /**
      * Declaration for function defined in nv_time/nv_time.cpp
      * It initializes and returns time through Nvidia's egl extension for time.
      * It is useful while debugging the demo using PerfHUD.
-     * 
+     *
      * @see: nv_time/nv_time.cpp for implementation details.
      */
     public native void nvAcquireTimeExtension();
     public native long nvGetSystemTime();
+
+
+    public static NvEventQueueActivity getInstance() {
+        return mInstance;
+    }
 
     @SuppressLint("SuspiciousIndentation")
     @Override
@@ -419,9 +431,9 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
         System.out.println("**** onCreate");
         super.onCreate(savedInstanceState);
 
-		if(supportPauseResume)
-		{
-		    System.out.println("Calling init(false)");
+        if(supportPauseResume)
+        {
+            System.out.println("Calling init(false)");
             init(false);
         }
         handler = new Handler();
@@ -441,6 +453,8 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
 
         hideSystemUI();
 
+
+
         //((TextView)findViewById(R.id.main_version_text)).setText(BuildConfig.VERSION_NAME);
 
         getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(i -> {
@@ -454,7 +468,12 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
 
         });
 
+        mInstance = this;
+
         processCutout();
+
+         // mHudManager = new HudManager(this);
+
     }
 
     public void onConfigurationChanged(Configuration newConfig) {
@@ -481,7 +500,7 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
         this.paused = false;
 
         super.onResume();
-       // this.inputPaused = false;
+        // this.inputPaused = false;
     }
 
     /**
@@ -493,7 +512,7 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
     public void onRestart() {
         super.onRestart();
     }
-    
+
     /**
      * Implementation function: defined in libnvevent.a
      * The application does not and should not overide this; nv_event handles this internally
@@ -502,13 +521,13 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
     public void onPause() {
         super.onPause();
     }
-    
+
     /**
      * Implementation function: defined in libnvevent.a
      * The application does not and should not overide this; nv_event handles this internally
      * And remaps as needed into the native calls exposed by nv_event.h
      */
-	@Override
+    @Override
     public void onStop() {
 
         super.onStop();
@@ -518,11 +537,11 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
      * Implementation function: defined in libnvevent.a
      * The application should *probably* not overide this; nv_event handles this internally
      * And remaps as needed into the native calls exposed by nv_event.h
-	 *
-	 * NOTE: An application may need to override this if the app has an
-	 *       in-process instance of the Service class and the native side wants to
-	 *       keep running. The app would want to execute the content of the
-	 *       if(supportPauseResume) clause when it is time to exit.
+     *
+     * NOTE: An application may need to override this if the app has an
+     *       in-process instance of the Service class and the native side wants to
+     *       keep running. The app would want to execute the content of the
+     *       if(supportPauseResume) clause when it is time to exit.
      */
     @Override
     public void onDestroy() {
@@ -549,17 +568,17 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
         }
     }
 
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-		// Auto-generated method stub
-	}
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Auto-generated method stub
+    }
 
     /**
      * Implementation function: defined in libnvevent.a
      * The application does not and should not overide this; nv_event handles this internally
      * And remaps as needed into the native calls exposed by nv_event.h
      */
-	public void onSensorChanged(SensorEvent event) {
-		// Auto-generated method stub
+    public void onSensorChanged(SensorEvent event) {
+        // Auto-generated method stub
 //		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
 //        {
 //            float roll = 0.0f;
@@ -584,8 +603,8 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
 //            }
 //            accelerometerEvent(roll, pitch, event.values[2]);
 //        }
-	}
-    
+    }
+
     /**
      * Implementation function: defined in libnvevent.a
      * The application does not and should not overide this; nv_event handles this internally
@@ -621,7 +640,30 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
         }
         return ret;
     }
- 
+
+    // เพิ่ม Method เหล่านี้ลงในคลาส NvEventQueueActivity
+    public void sendButtonQuick(int type, byte[] data, int id) {
+        // โค้ดส่งข้อมูลไปยัง Native/C++
+    }
+
+    public void sendButton(int type, byte[] data, int id) {
+        // โค้ดส่งข้อมูลไปยัง Native/C++
+    }
+
+    public void onWeaponChanged() {
+        // โค้ดอัปเดตรูปอาวุธ
+    }
+
+
+
+    // เพิ่ม Method นี้ลงในคลาส NvEventQueueActivity
+    public void showTab() {
+        // โค้ดสำหรับสั่งให้ Native Game เปิดหน้า Tab
+        // โดยปกติจะเรียก JNI หรือเปิด Layout ที่เตรียมไว้
+        // ตัวอย่างเช่น:
+        this.sendButton(1, "TAB".getBytes(), 1);
+    }
+
     /**
      * Implementation function: defined in libnvevent.a
      * The application does not and should not overide this; nv_event handles this internally
@@ -690,7 +732,7 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
         System.out.println("initEGLAndGLES2 failed, core EGL init failure");
         return false;
     }
-		
+
     /**
      * Implementation function: defined in libnvevent.a
      * The application does not and should not overide this; nv_event handles this internally
@@ -706,13 +748,25 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
     {
         final NvEventQueueActivity act = this;
 
-		System.out.println("ln systemInit");
+        System.out.println("ln systemInit");
 
         setContentView(R.layout.main_render_screen);
+
+        // เพิ่มไว้หลัง setContentView(R.layout.main_render_screen);
+       /* if (mHudManager == null) {
+            mHudManager = new HudManager(this);
+        } */
 
         SurfaceView view = findViewById(R.id.main_sv);
         getWindow().setSustainedPerformanceMode(true);
         mSurfaceView = view;
+
+        try {// สั่งให้แสดงผลทันที
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
 
         mAndroidUI = findViewById(R.id.ui_layout);
 
@@ -726,6 +780,9 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
         mSurfaceView.setOnTouchListener(this);
 
         DoResumeEvent();
+
+
+        // mHudManager = new HudManager(this);
 
         holder.addCallback(new Callback()
         {
@@ -830,7 +887,7 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
     /**
      * Called to initialize EGL. This function should not be called by the inheriting
      * activity, but can be overridden if needed.
-     * 
+     *
      * @return True if successful
      */
     public boolean initEGL(int esVersion, int depthBits) {
@@ -963,7 +1020,7 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
     /**
      * Called to create the EGLSurface to be used for rendering. This function should not be called by the inheriting
      * activity, but can be overridden if needed.
-     * 
+     *
      * @param surface The SurfaceHolder that holds the surface that we are going to render to.
      * @return True if successful
      */
@@ -1005,7 +1062,7 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
      */
     protected void cleanupEGL()
     {
-		System.out.println("cleanupEGL");
+        System.out.println("cleanupEGL");
         destroyEGLSurface();
         if (eglDisplay != null)
             egl.eglMakeCurrent(eglDisplay, EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_CONTEXT);
@@ -1018,16 +1075,16 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
         eglContext = null;
         eglSurface = null;
 
-		ranInit = false;
-		eglConfig = null;
+        ranInit = false;
+        eglConfig = null;
 
-		cachedSurfaceHolder = null;
-		surfaceWidth = 0;
-		surfaceHeight = 0;
+        cachedSurfaceHolder = null;
+        surfaceWidth = 0;
+        surfaceHeight = 0;
     }
 
     /**
-     * Implementation function: 
+     * Implementation function:
      * The application does not and should not overide or call this directly
      * Instead, the application should call NVEventEGLSwapBuffers(),
      * which is declared in nv_event.h
@@ -1035,8 +1092,8 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
 
     public boolean swapBuffers()
     {
-		//long stopTime;
-		//long startTime = nvGetSystemTime();
+        //long stopTime;
+        //long startTime = nvGetSystemTime();
 
         if (SwapBufferSkip > 0) {
             SwapBufferSkip--;
@@ -1045,38 +1102,38 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
         }
         if (eglSurface == null)
         {
-	        System.out.println("eglSurface is NULL");
-	        return false;
-	    }
+            System.out.println("eglSurface is NULL");
+            return false;
+        }
         else if (!egl.eglSwapBuffers(eglDisplay, eglSurface))
         {
-	        System.out.println("eglSwapBufferrr: " + egl.eglGetError());
-	        return false;
-	    }
-		//stopTime = nvGetSystemTime();
-		//String s = String.format("%d ms in eglSwapBuffers", (int)(stopTime - startTime));
-		//Log.v("EventAccelerometer", s);
-	    
-	    return true;
-    }    
+            System.out.println("eglSwapBufferrr: " + egl.eglGetError());
+            return false;
+        }
+        //stopTime = nvGetSystemTime();
+        //String s = String.format("%d ms in eglSwapBuffers", (int)(stopTime - startTime));
+        //Log.v("EventAccelerometer", s);
 
-	public boolean getSupportPauseResume()
-	{
-		return supportPauseResume;
-	}
-    
+        return true;
+    }
+
+    public boolean getSupportPauseResume()
+    {
+        return supportPauseResume;
+    }
+
     public int getSurfaceWidth()
     {
-    	return surfaceWidth;        
+        return surfaceWidth;
     }
-    
+
     public int getSurfaceHeight()
     {
-    	return surfaceHeight;           
+        return surfaceHeight;
     }
-   
+
     /**
-     * Implementation function: 
+     * Implementation function:
      * The application does not and should not overide or call this directly
      * Instead, the application should call NVEventEGLMakeCurrent(),
      * which is declared in nv_event.h
@@ -1086,7 +1143,7 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
     {
         if (!HasGLExtensions && gl != null && this.cachedSurfaceHolder != null)
         {
-           // gl.glEnable(GL10.GL_CULL_FACE); // ? сглаживание
+            // gl.glEnable(GL10.GL_CULL_FACE); // ? сглаживание
             glVendor = gl.glGetString(GL10.GL_VENDOR);
             glExtensions = gl.glGetString(GL10.GL_EXTENSIONS);
             glRenderer = gl.glGetString(GL10.GL_RENDERER);
@@ -1105,15 +1162,15 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
     public boolean makeCurrent()
     {
         if (eglContext == null)
-		{
-	        System.out.println("eglContext is NULL");
-	        return false;
-	    }
+        {
+            System.out.println("eglContext is NULL");
+            return false;
+        }
         else if (eglSurface == null)
         {
-	        System.out.println("eglSurface is NULL");
-	        return false;
-	    }
+            System.out.println("eglSurface is NULL");
+            return false;
+        }
         else if (!egl.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext))
         {
             if (!egl.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext))
@@ -1122,20 +1179,20 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
                 return false;
             }
         }
-	    
+
         // This must be called after we have bound an EGL context
         //nvAcquireTimeExtension();
         GetGLExtensions();
-	    return true;
+        return true;
     }
 
-	public int getOrientation()
-	{
+    public int getOrientation()
+    {
         return display.getOrientation();
-	}
+    }
 
     /**
-     * Implementation function: 
+     * Implementation function:
      * The application does not and should not overide or call this directly
      * Instead, the application should call NVEventEGLUnmakeCurrent(),
      * which is declared in nv_event.h
@@ -1143,12 +1200,12 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
     public boolean unMakeCurrent()
     {
         if (!egl.eglMakeCurrent(eglDisplay, EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_CONTEXT))
-		{
-	        System.out.println("egl(Un)MakeCurrent err: " + egl.eglGetError());
-	        return false;
-	    }
-	    
-	    return true;
+        {
+            System.out.println("egl(Un)MakeCurrent err: " + egl.eglGetError());
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -1157,7 +1214,7 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
      * in their simplest form do not need to call any of the parent class' functions. This to make
      * it easier for pure C/C++ application so that these do not need to call java functions from C/C++
      * code.
-     * 
+     *
      * @see #cleanup()
      */
     protected void systemCleanup()
@@ -1189,7 +1246,7 @@ public abstract class NvEventQueueActivity extends AppCompatActivity implements 
         byte[] toReturn = null;
         try
         {
-            toReturn = retn.getBytes("windows-1251");
+            toReturn = retn.getBytes("windows-874");
         }
         catch(UnsupportedEncodingException e)
         {

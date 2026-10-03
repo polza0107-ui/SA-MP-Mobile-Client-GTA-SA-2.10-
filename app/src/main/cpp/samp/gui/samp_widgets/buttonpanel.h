@@ -1,14 +1,17 @@
 #pragma once
 
+// ใช้ include หลักของโปรเจกต์ที่น่าจะมีประกาศคลาส Layout และ Button ไว้แล้ว
+#include "../gui.h"
+
 class ButtonPanel : public Layout
 {
 public:
-	ButtonPanel();
+    ButtonPanel();
 
-	CButton* m_bH;
+
+    CButton* m_bH;
 private:
-	Button* m_bAlt;
-	Button* m_bY;
-	Button* m_bN;
-
+    CButton* m_bAlt;
+    CButton* m_bY;
+    CButton* m_bN;
 };

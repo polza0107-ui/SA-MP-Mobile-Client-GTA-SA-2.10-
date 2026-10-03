@@ -28,8 +28,8 @@ SplashScreen::SplashScreen()
 
 void SplashScreen::performLayout()
 {
-	m_logo->setFixedSize(UISettings::splashscreenLogoSize());
-	m_logo->setPosition(UISettings::splashscreenLogoPos());
+	//m_logo->setFixedSize(UISettings::splashscreenLogoSize());
+	//m_logo->setPosition(UISettings::splashscreenLogoPos());
 
 	m_progressBar->setFixedSize(UISettings::splashscreenPBarSize());
 	m_progressBar->setPosition(UISettings::splashscreenPBarPos());
@@ -40,7 +40,7 @@ void SplashScreen::draw(ImGuiRenderer* renderer)
 	// background
 	renderer->drawRect(absolutePosition(), absolutePosition() + size(), ImColor(0.0f, 0.0f, 0.0f), true);
 	// logo
-	m_logo->draw(renderer);
+	//m_logo->draw(renderer);
 	// progress bar
 	m_progressBar->draw(renderer);
 }
