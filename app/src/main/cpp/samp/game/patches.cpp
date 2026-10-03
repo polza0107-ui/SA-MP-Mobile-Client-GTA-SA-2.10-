@@ -242,6 +242,8 @@ void ApplyPatches()
     //CDebugInfo::ApplyDebugPatches();
 
     CHook::RET("_ZN12CAudioEngine16StartLoadingTuneEv"); // звук загрузочного экрана
+    CHook::RET("_ZN14CLoadingScreen12RenderSplashEv"); // bypass loading splash to prevent RLEDecompress crash
+    CHook::RET("_ZN14CLoadingScreen12LoadSplashesEhh");
 
     // DefaultPCSaveFileName
     char* DefaultPCSaveFileName = (char*)(g_libGTASA + (VER_x32 ? 0x006B012C : 0x88CB08));
