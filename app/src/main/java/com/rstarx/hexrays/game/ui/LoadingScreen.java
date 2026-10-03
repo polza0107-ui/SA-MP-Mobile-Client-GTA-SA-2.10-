@@ -34,19 +34,8 @@ public class LoadingScreen {
 
     // --- เพิ่ม Method นี้เพื่อแก้ Error line 43 ---
     public void startLoadingProcess() {
-        new Thread(() -> {
-            File root = activity.getExternalFilesDir(null);
-            if (root == null) return;
-
-            // สแกนโฟลเดอร์ data/
-            scanFolder(new File(root, "data"), "data/");
-
-            // สแกนโฟลเดอร์ texdb/
-            scanFolder(new File(root, "texdb"), "texdb/");
-
-            // เมื่อเสร็จแล้ว (Option: จะสั่ง hide เลย หรือรอ Native สั่งก็ได้)
-            // updateStatus("โหลดเสร็จสมบูรณ์");
-        }).start();
+        // ให้หน้าจอแสดงนิ่งๆ รอ Native โหลดเสร็จ ไม่ไปแย่ง I/O อ่านไฟล์แข่งกับ libGTASA.so
+        updateStatus("กำลังเข้าสู่เกม...");
     }
 
     private void scanFolder(File folder, String prefix) {

@@ -95,14 +95,13 @@ public class GTASA extends WarMedia {
 
     private void clearModelCache() {
         try {
-            File file = new File(getExternalFilesDir(null).toString() + "/CINFO.BIN");
-            if (file.exists()) {
-                file.delete();
-            }
-
-            file = new File(getExternalFilesDir(null).toString() + "/models/MINFO.BIN");
-            if (file.exists()) {
-                file.delete();
+            File externalDir = getExternalFilesDir(null);
+            if (externalDir != null) {
+                String path = externalDir.getAbsolutePath();
+                new File(path + "/CINFO.BIN").delete();
+                new File(path + "/models/MINFO.BIN").delete();
+                new File(path + "/gta_sa.set").delete();
+                new File(path + "/gtasatelem.set").delete();
             }
         } catch (Exception e) {
             e.printStackTrace();

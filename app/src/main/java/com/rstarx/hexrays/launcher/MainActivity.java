@@ -204,9 +204,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void clearModelCache() {
         try {
-            String path = getExternalFilesDir(null).toString();
-            new File(path + "/CINFO.BIN").delete();
-            new File(path + "/models/MINFO.BIN").delete();
+            File externalDir = getExternalFilesDir(null);
+            if (externalDir != null) {
+                String path = externalDir.getAbsolutePath();
+                new File(path + "/CINFO.BIN").delete();
+                new File(path + "/models/MINFO.BIN").delete();
+                new File(path + "/gta_sa.set").delete();
+                new File(path + "/gtasatelem.set").delete();
+            }
         } catch (Exception ignored) { }
     }
 }
