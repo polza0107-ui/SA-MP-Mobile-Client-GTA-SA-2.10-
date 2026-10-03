@@ -5,20 +5,6 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        debug {
-            storeFile file("../../keys/new.jks")
-            storePassword "123123"
-            keyAlias "key0"
-            keyPassword "123123"
-        }
-        release {
-            storeFile file("../../keys/new.jks")
-            storePassword "123123"
-            keyAlias "key0"
-            keyPassword "123123"
-        }
-    }
     compileSdk 34
     allprojects {repositories {maven { url 'https://maven.aliyun.com/repository/jcenter' }}}
     namespace 'com.samp.mobile'
@@ -42,6 +28,7 @@ android {
     packagingOptions {
         jniLibs {
             excludes += ['META-INF/*']
+            pickFirsts += ['**/libbass.so']
         }
         resources {
             excludes += ['META-INF/*']
@@ -61,25 +48,16 @@ android {
             debuggable false
             jniDebuggable false
             minifyEnabled false
-
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
         }
         release {
             firebaseCrashlytics {
-                // Enable processing and uploading of native symbols to Firebase servers.
-                // By default, this is disabled to improve build speeds.
-                // This flag must be enabled to see properly-symbolicated native
-                // stack traces in the Crashlytics dashboard.
-                nativeSymbolUploadEnabled true
-                strippedNativeLibsDir 'build/intermediates/stripped_native_libs/release/out/lib'
-                unstrippedNativeLibsDir 'build/intermediates/merged_native_libs/release/out/lib'
+                nativeSymbolUploadEnabled false
             }
             debuggable false
             jniDebuggable false
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
         }
         all{
             multiDexEnabled true

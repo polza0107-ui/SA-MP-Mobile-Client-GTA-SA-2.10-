@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "384675259373",
-    "project_id": "samp-mobile-b726b",
-    "storage_bucket": "samp-mobile-b726b.firebasestorage.app"
+    "project_number": "123456789012",
+    "project_id": "samp-mobile-dummy",
+    "storage_bucket": "samp-mobile-dummy.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:384675259373:android:f3f8e21ddafb7bf16a3de4",
+        "mobilesdk_app_id": "1:123456789012:android:abcdef1234567890abcdef",
         "android_client_info": {
           "package_name": "com.samp.mobile"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC64iePRG-COuNFYXgrCbWUs6UR8wpgkJs"
+          "current_key": "AIzaSyDummyKeyForBuildOnly1234567890"
         }
       ],
       "services": {
