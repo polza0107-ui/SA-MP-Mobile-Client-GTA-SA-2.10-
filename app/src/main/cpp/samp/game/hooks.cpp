@@ -248,6 +248,15 @@ void CObject_Render_hook(CObjectGta* thiz)
 				((void (*)(void))(g_libGTASA + 0x5D1F5C + 1))();*/
 /* =============================================================================== */
 
+float (*CEntity__GetDistanceFromCentreOfMassToBaseOfModel)(void* thiz);
+float CEntity__GetDistanceFromCentreOfMassToBaseOfModel_hook(void* thiz)
+{
+    if (!thiz) return 0.0f;
+    uintptr_t pModel = *(uintptr_t*)((uintptr_t)thiz + (VER_x32 ? 0x14 : 0x08));
+    if (!pModel) return 0.0f;
+    return CEntity__GetDistanceFromCentreOfMassToBaseOfModel(thiz);
+}
+
 /* =============================================================================== */
 
 bool NotifyEnterVehicle(CVehicleGTA *_pVehicle)
@@ -1752,6 +1761,7 @@ void InstallHooks()
 
     CHook::InlineHook("_ZN16CTaskSimpleGetUp10ProcessPedEP4CPed", &CTaskSimpleGetUp__ProcessPed_hook, &CTaskSimpleGetUp__ProcessPed); // CTaskSimpleGetUp::ProcessPed
     CHook::InlineHook("_ZN7CObject6RenderEv", &CObject_Render_hook, & CObject_Render);
+    CHook::InlineHook("_ZN7CEntity40GetDistanceFromCentreOfMassToBaseOfModelEv", &CEntity__GetDistanceFromCentreOfMassToBaseOfModel_hook, &CEntity__GetDistanceFromCentreOfMassToBaseOfModel);
 
     CHook::Redirect("_Z19PlayerIsEnteringCarv", &PlayerIsEnteringCar);
     
