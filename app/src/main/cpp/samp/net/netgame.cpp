@@ -48,13 +48,8 @@ CNetGame::CNetGame(const char* szHostOrIp, int iPort, const char *szPlayerName, 
 {
     FLog("CNetGame initializing..");
 
-    // --- แก้ไขตรงนี้: กำหนด IP และ Port ที่ต้องการล็อค ---
-    const char* myFixedIP = "gta-irz.com";
-    int myFixedPort = 7777;
-    // ----------------------------------------------
-
     // voice
-    Network::OnRaknetConnect(myFixedIP, myFixedPort);
+    Network::OnRaknetConnect(szHostOrIp, iPort);
 
     m_pNetSet = new NET_SETTINGS;
     memset(m_szHostName, 0, 256);
@@ -62,9 +57,8 @@ CNetGame::CNetGame(const char* szHostOrIp, int iPort, const char *szPlayerName, 
 
     strcpy(m_szHostName, "SA-MP");
 
-    // เก็บค่าที่ล็อคไว้ลงตัวแปรของ Class
-    strncpy(m_szHostOrIp, myFixedIP, sizeof(m_szHostOrIp));
-    m_iPort = myFixedPort;
+    strncpy(m_szHostOrIp, szHostOrIp, sizeof(m_szHostOrIp));
+    m_iPort = iPort;
 
     m_pRakClient = RakNetworkFactory::GetRakClientInterface();
     InitializePools();

@@ -158,36 +158,56 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupSettingsFile() {
         ConfigValidator.validateConfigFiles(this);
-        iniFile = new File(getGameDirectory(), "SAMP/settings.ini");
-        try {
-            if (!iniFile.exists()) {
-                iniFile.getParentFile().mkdirs();
-                iniFile.createNewFile();
+        File[] targets = new File[] {
+            new File(getGameDirectory(), "SAMP/settings.ini"),
+            new File(getExternalFilesDir(null), "SAMP/settings.ini")
+        };
+        for (File target : targets) {
+            try {
+                if (!target.exists()) {
+                    target.getParentFile().mkdirs();
+                    target.createNewFile();
+                }
+                Wini w = new Wini(target);
+                String nn = w.get("client", "name");
+                if (nn != null && !nn.isEmpty() && mNickName.getText().toString().isEmpty()) {
+                    mNickName.setText(nn);
+                    mNickName.setSelection(mNickName.getText().length());
+                }
+                w.put("client", "host", "192.168.1.112");
+                w.put("client", "port", 7777);
+                w.store();
+                if (target.equals(new File(getGameDirectory(), "SAMP/settings.ini"))) {
+                    mWini = w;
+                    iniFile = target;
+                }
+            } catch (Exception e) {
+                Log.e("SAMP", "Init Error: " + e.getMessage());
             }
-            mWini = new Wini(iniFile);
-            String nn = mWini.get("client", "name");
-            if (nn != null) {
-                mNickName.setText(nn);
-                mNickName.setSelection(mNickName.getText().length());
-            }
-            mWini.put("client", "host", "192.168.1.112");
-            mWini.put("client", "port", 7777);
-            mWini.store();
-        } catch (Exception e) {
-            Log.e("SAMP", "Init Error: " + e.getMessage());
         }
     }
 
     private void startGame() {
         String finalName = mNickName.getText().toString().trim();
         if (finalName.length() < 3) return;
+        File[] targets = new File[] {
+            new File(getGameDirectory(), "SAMP/settings.ini"),
+            new File(getExternalFilesDir(null), "SAMP/settings.ini")
+        };
+        for (File target : targets) {
+            try {
+                if (!target.exists()) {
+                    target.getParentFile().mkdirs();
+                    target.createNewFile();
+                }
+                Wini w = new Wini(target);
+                w.put("client", "name", finalName);
+                w.put("client", "host", "192.168.1.112");
+                w.put("client", "port", 7777);
+                w.store();
+            } catch (Exception ignored) { }
+        }
         try {
-            if (mWini != null) {
-                mWini.put("client", "name", finalName);
-                mWini.put("client", "host", "192.168.1.112");
-                mWini.put("client", "port", 7777);
-                mWini.store();
-            }
             hideKeyboard(this);
             startActivity(new Intent(MainActivity.this, SAMP.class));
             finish();

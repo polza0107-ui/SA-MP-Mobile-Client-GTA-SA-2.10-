@@ -172,7 +172,8 @@ public class SAMP extends GTASA implements CustomKeyboard.InputListener, HeightP
         try {
             initAssetManager(getAssets());
             // ตำแหน่ง path หลักสำหรับโหลดไฟล์เกม
-            String storagePath = getExternalFilesDir(null).getAbsolutePath() + "/";
+            java.io.File gtaDir = new java.io.File(android.os.Environment.getExternalStorageDirectory(), "GTA");
+            String storagePath = (gtaDir.exists() && gtaDir.isDirectory()) ? (gtaDir.getAbsolutePath() + "/") : (getExternalFilesDir(null).getAbsolutePath() + "/");
             initializeSAMP(storagePath);
         } catch (UnsatisfiedLinkError e5) {
             Log.e(TAG, "Native library error: " + e5.getMessage());
